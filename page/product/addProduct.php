@@ -27,12 +27,18 @@
             $category_id = (int) $_POST['category_id'];
             $data = date('Y-m-d');
             //upload image 
-            $filename = '';
-            if (isset($_FILES['image'])) {
+            $filename = 'product.png';
+            if (!empty($_FILES['image'])) {
                 $image = $_FILES['image']['name'];
                 $filename =  uniqid() . $image;
-                $destination = __DIR__ . '../../upload/product/' . $filename;
-                move_uploaded_file($_FILES['image']['tmp_name'],   $destination);
+                $destination = __DIR__ . '/../../upload/product/' . $filename;
+                //move_uploaded_file($_FILES['image']['tmp_name'],   $destination);
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+                    // Successfully uploaded
+                } else {
+                    // Upload failed — keep default image
+                    $filename = 'product.png';
+                }
             }
             if (
                 !empty($name) &&

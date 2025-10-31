@@ -1,6 +1,6 @@
 -- Create the database
 CREATE DATABASE TastyCart;
-DROP DATABASE TastyCart;
+
 
 USE TastyCart;
 
@@ -13,7 +13,7 @@ CREATE TABLE users (
     password VARCHAR(150),
     date_creation DATETIME
 );
-DROP Table users;
+
 
 -- Table: categories
 CREATE TABLE categories (
@@ -22,7 +22,7 @@ CREATE TABLE categories (
     description VARCHAR(150),
     date_creation DATETIME
 );
-DROP Table categories;
+
 
 
 

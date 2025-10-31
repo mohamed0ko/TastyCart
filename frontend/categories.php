@@ -34,10 +34,10 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
             foreach ($products as $product) {
             ?>
                 <div class="card mb-3 col-md-4">
-                    <img src="..." class="card-img-top" alt="...">
+                    <img src="../upload/product/<?php echo $product['image'] ?>" class="card-img-top" alt="..." width="300%" height="200px">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo $product['name'] ?></h5>
-                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <p class="card-text"><?php echo $product['description'] ?></p>
                         <p class="card-text"><small class="text-muted"><?= date_format(date_create($product['date_creation']), 'Y/m/d') ?>
                             </small></p>
                     </div>
