@@ -14,19 +14,29 @@
     <?php
     require_once '../../connectData.php';
     // fetch product
-    $sql = $pdo->prepare('select * from products');
+    $sql = $pdo->prepare('
+    SELECT 
+        p.id, 
+        p.name, 
+        p.prix, 
+        p.discount, 
+        p.date_creation, 
+        c.name AS category_name
+    FROM products AS p
+    JOIN categories AS c ON p.category_id = c.id
+');
     $sql->execute();
     $products = $sql->fetchAll(PDO::FETCH_ASSOC);
+
 
     // delete product
     if (isset($_GET['product_id'])) {
         require_once '../../connectData.php';
         $id = (int)$_GET['product_id'];
-        $sql = $pdo->prepare('delete from users where id =?');
+        $sql = $pdo->prepare('delete from products where id =?');
         $sql->execute([$id]);
         header('location:listProduct.php');
     }
-
 
     ?>
 
@@ -55,11 +65,15 @@
                         <td><?= htmlspecialchars($product['name'] ?? '') ?></td>
                         <td><?= htmlspecialchars($product['prix'] ?? '') ?></td>
                         <td><?= htmlspecialchars($product['discount'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($product['category_id'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($product['category_name'] ?? '') ?></td>
                         <td><?= htmlspecialchars($product['date_creation'] ?? '') ?></td>
                         <td>
-                            <a class="btn btn-primary" href="">update</a>
-                            <a class="btn btn-danger delete" href="listProduct.php?product_id=<?= $product['id'] ?>">delete</a>
+                            <a class="btn btn-primary" href="updateProduct.php?product_id=<?= $product['id'] ?>">update</a>
+                            <a class="btn btn-danger delete"
+                                href="listProduct.php?product_id=<?= $product['id'] ?>"
+                                onclick="return confirm('Are you sure you want to delete this product?');">
+                                Delete
+                            </a>
                         </td>
                     </tr>
                 <?php

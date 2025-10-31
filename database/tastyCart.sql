@@ -31,15 +31,22 @@ DROP Table categories;
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150),
+    description VARCHAR(255),
     prix DECIMAL(10,2),
     discount int,
+    image VARCHAR(255),
     category_id INT,
     date_creation DATETIME,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
-DROP Table products;
+
 
 SELECT * FROM users;
 SELECT * FROM categories;
 select * FROM products;
+
+ALTER TABLE categories ADD COLUMN icon VARCHAR(255) AFTER name;
+
+
+
 

@@ -22,11 +22,12 @@
         if (isset($_POST['addCategory'])) {
             $name = $_POST['name'];
             $description = $_POST['description'];
+            $icon = $_POST['icon'];
             $data = date('Y-m-d');
             if (!empty($name) && !empty($description)) {
                 require_once '../../connectData.php';
-                $sql = $pdo->prepare('INSERT INTO categories(name,description,date_creation) values (?,?,?)');
-                $sql->execute([$name, $description, $data]);
+                $sql = $pdo->prepare('INSERT INTO categories(name,icon,description,date_creation) values (?,?,?,?)');
+                $sql->execute([$name, $icon, $description, $data]);
                 header("Location: " . $_SERVER['PHP_SELF'] . "?success=$name");
                 exit;
             } else {
@@ -53,6 +54,10 @@
             <div class="mb-3 my-3">
                 <label for="login" class="form-label">name</label>
                 <input type="text" class="form-control" id="name" name="name">
+            </div>
+            <div class="mb-3 my-3">
+                <label for="icon" class="form-label">Icon</label>
+                <input type="text" class="form-control" placeholder="Enter icon class (fa fa-solid fa-list)" id="icon" name="icon">
             </div>
 
             <div class="form-floating mb-3">

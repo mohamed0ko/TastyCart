@@ -9,7 +9,7 @@ if (isset($_SESSION['users'])) {
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Food Shop</a>
+        <a class="navbar-brand" href="#">TastyCart</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -26,6 +26,9 @@ if (isset($_SESSION['users'])) {
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/TastyCart/page/category/addCategory.php">Add Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/TastyCart/page/category/listCategory.php">list Category</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/TastyCart/page/product/listProduct.php">list Product</a>

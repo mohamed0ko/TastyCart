@@ -21,11 +21,19 @@
         //create product
         if (isset($_POST['addProduct'])) {
             $name = $_POST['name'];
+            $description = $_POST['description'];
             $prix = $_POST['prix'];
             $discount = $_POST['discount'];
             $category_id = (int) $_POST['category_id'];
             $data = date('Y-m-d');
-
+            //upload image 
+            $filename = '';
+            if (isset($_FILES['image'])) {
+                $image = $_FILES['image']['name'];
+                $filename =  uniqid() . $image;
+                $destination = __DIR__ . '../../upload/product/' . $filename;
+                move_uploaded_file($_FILES['image']['tmp_name'],   $destination);
+            }
             if (
                 !empty($name) &&
                 is_numeric($prix) &&
@@ -34,9 +42,8 @@
             ) {
                 require_once '../../connectData.php';
 
-                $sql = $pdo->prepare('INSERT INTO products (name, prix, discount, category_id, date_creation) VALUES (?, ?, ?, ?, ?)');
-                $sql->execute([$name, $prix, $discount, $category_id, $data]);
-
+                $sql = $pdo->prepare('INSERT INTO products (name,description, prix, discount,image, category_id, date_creation) VALUES (?, ?, ?, ?, ?,?,?)');
+                $sql->execute([$name, $description, $prix, $discount, $filename, $category_id, $data]);
 
                 header("Location: " . $_SERVER['PHP_SELF'] . "?success=" . urlencode($name));
                 exit;
@@ -65,13 +72,19 @@
             </div>
         <?php endif; ?>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <h3>Add Product</h3>
 
             <div class="mb-3 my-3">
                 <label for="login" class="form-label">name</label>
                 <input type="text" class="form-control" id="name" name="name">
             </div>
+
+            <div class="form-floating mb-3">
+                <textarea class="form-control" placeholder="Leave a comment here" name="description" id="description"></textarea>
+                <label for="description">Description</label>
+            </div>
+
             <div class="mb-3 my-3">
                 <label for="prix" class="form-label">Prix</label>
                 <input type="text" class="form-control" id="prix" name="prix">
@@ -81,7 +94,10 @@
                 <input type="text" class="form-control" id="discount" name="discount">
             </div>
 
-
+            <div class="mb-3 my-3">
+                <label for="image" class="form-label">Image</label>
+                <input class="form-control" type="file" id="image" name="image">
+            </div>
             <select class="form-select mb-3" name="category_id" aria-label="Default select example">
                 <option selected> select Category</option>
                 <?php if (count($categories) > 0) : ?>
