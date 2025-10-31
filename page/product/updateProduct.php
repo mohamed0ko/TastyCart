@@ -33,17 +33,40 @@
 
         if (isset($_POST['updateProduct'])) {
             require_once '../../connectData.php';
+
             $id = (int)$_POST['id'];
             $name = trim($_POST['name']);
+            $description = trim($_POST['description']);
             $prix = $_POST['prix'];
             $discount = $_POST['discount'];
             $category_id = trim($_POST['category_id']);
-            $sql = $pdo->prepare('UPDATE products
-                                         SET name = ?, prix = ?, discount = ?, category_id = ? 
-                                         WHERE id = ?');
 
-            $sql->execute([$name, $prix, $discount, $category_id, $id]);
-            header('location:listProduct.php');
+            // Default image name
+            $filename = '';
+            if (!empty($_FILES['image']['name'])) {
+                $image = $_FILES['image']['name'];
+                $filename = uniqid() . '_' . basename($image);
+                $destination = __DIR__ . '/../../upload/product/' . $filename;
+                move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+            }
+            if (!empty($name) && !empty($description) && !empty($prix)) {
+                // Check if a new image was uploaded
+                if (!empty($filename)) {
+                    // Update including image
+                    $sql = $pdo->prepare('UPDATE products
+                              SET name = ?, description = ?, prix = ?, discount = ?, image = ?, category_id = ?
+                              WHERE id = ?');
+                    $sql->execute([$name, $description, $prix, $discount, $filename, $category_id, $id]);
+                } else {
+                    // Update without changing image
+                    $sql = $pdo->prepare('UPDATE products
+                              SET name = ?, description = ?, prix = ?, discount = ?, category_id = ?
+                              WHERE id = ?');
+                    $sql->execute([$name, $description, $prix, $discount, $category_id, $id]);
+                }
+            }
+
+            header('Location: listProduct.php');
             exit;
         }
 
@@ -66,7 +89,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <h3>Update Product</h3>
 
             <div class="mb-3 my-3">
@@ -74,6 +97,10 @@
                 <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($editProduct['name'] ?? '') ?>">
                 <input type="hidden" class="form-control" id="id" name="id" value="<?= htmlspecialchars($editProduct['id'] ?? '') ?>">
 
+            </div>
+            <div class="form-floating mb-3">
+                <textarea class="form-control" placeholder="Leave a comment here" name="description" id="description"><?= htmlspecialchars($editProduct['description'] ?? '') ?></textarea>
+                <label for="description">Description</label>
             </div>
             <div class="mb-3 my-3">
                 <label for="prix" class="form-label">Prix</label>
@@ -83,6 +110,17 @@
                 <label for="discount" class="form-label">Discount</label>
                 <input type="text" class="form-control" id="discount" name="discount" value="<?= htmlspecialchars($editProduct['discount'] ?? '') ?>">
             </div>
+            <div class="mb-3 my-3">
+                <label for="image" class="form-label">Image</label>
+                <input class="form-control" type="file" id="image" name="image" value="<?= htmlspecialchars($editProduct['image'] ?? '') ?>">
+            </div>
+            <img
+                src="../../upload/product/<?php echo htmlspecialchars($editProduct['image']); ?>"
+                class="card-img-top"
+                alt="<?php echo htmlspecialchars($editProduct['name']); ?>"
+                style="width: 300px; height: 200px; object-fit: cover;">
+
+
 
 
             <select class="form-select mb-3" name="category_id" aria-label="Default select example">
@@ -101,7 +139,7 @@
 
 
 
-            <button type="submit" class="btn btn-primary" name="updateProduct">Add Product</button>
+            <button type="submit" class="btn btn-primary" name="updateProduct">update Product</button>
 
         </form>
     </div>

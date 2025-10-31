@@ -36,6 +36,7 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
                 <div class="card mb-3 col-md-4">
                     <img src="../upload/product/<?php echo $product['image'] ?>" class="card-img-top" alt="..." width="300%" height="200px">
                     <div class="card-body">
+                        <a href="detailProduct.php?product_id=<?php echo $product['image'] ?>">g</a>
                         <h5 class="card-title"><?php echo $product['name'] ?></h5>
                         <p class="card-text"><?php echo $product['description'] ?></p>
                         <p class="card-text"><small class="text-muted"><?= date_format(date_create($product['date_creation']), 'Y/m/d') ?>
