@@ -18,50 +18,88 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style/style.css">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- font-awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
     <title>categories | <?php echo $categories['name'] ?></title>
+
 </head>
 
 <body>
     <?php include '../include/nav_front.php' ?>
     <div class="container my-3 md-3 ">
         <h3><i class="<?= htmlspecialchars($categories['icon'] ?? '') ?>"></i>&nbsp;&nbsp;<?php echo $categories['name'] ?></h3>
-        <div class="row">
-            <?php
-            foreach ($products as $product) {
-            ?>
-                <div class="card mb-3 col-md-4">
-                    <img src="../upload/product/<?php echo $product['image'] ?>" class="card-img-top" alt="..." width="300%" height="200px">
-                    <div class="card-body">
-                        <a href="detailProduct.php?product_id=<?php echo $product['image'] ?>">g</a>
-                        <h5 class="card-title"><?php echo $product['name'] ?></h5>
-                        <p class="card-text"><?php echo $product['description'] ?></p>
-                        <p class="card-text"><small class="text-muted"><?= date_format(date_create($product['date_creation']), 'Y/m/d') ?>
-                            </small></p>
+
+
+        <!-- new -->
+        <div class="col-lg-9 my-3">
+            <div class="row g-4">
+                <?php
+
+                foreach ($products as $product) {
+                    $idProduct = $product['id'];
+                ?>
+                    <!-- Product Card 1 -->
+                    <div class="col-md-4">
+                        <div class="product-card shadow-sm">
+                            <div class="position-relative">
+
+                                <img src=" ../upload/product/<?php echo $product['image'] ?>" class="product-image w-100" alt="Product">
+                                <?php
+                                if (!empty($product['discount'])) {
+                                ?>
+                                    <span class="discount-badge">-<?php echo $product['discount'] ?>%</span>
+                                <?php
+
+                                }
+                                ?>
+
+                            </div>
+                            <div class="p-3">
+
+                                <span class="category-badge mb-2 d-inline-block"><?php echo $categories['name'] ?></span>
+                                <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $product['name'] ?></a></h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price">$<?php echo $product['prix'] ?></span>
+                                    <?php include '../include/qte.php' ?>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            <?php
-            }
-
-            if (empty($products)) {
-            ?>
-                <div class="alert alert-danger my-3 fade-out" role="alert">
-                    product not found !
-                </div>
-            <?php
-            }
-            ?>
+                <?php
+                }
+                if (empty($products)) {
+                ?>
+                    <div class="alert alert-danger my-3 fade-out" role="alert">
+                        product not found !
+                    </div>
+                <?php
+                }
+                ?>
 
 
 
+                <!-- More product cards can be added here -->
 
+            </div>
         </div>
 
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateQuantity(productId, change) {
+            const input = event.target.parentElement.querySelector('.quantity-input');
+            let value = parseInt(input.value) + change;
+            if (value >= 1) {
+                input.value = value;
+            }
+        }
+    </script>
 </body>
 
 </html>

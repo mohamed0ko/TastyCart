@@ -106,9 +106,24 @@
                 <label for="prix" class="form-label">Prix</label>
                 <input type="text" class="form-control" id="prix" name="prix" value="<?= htmlspecialchars($editProduct['prix'] ?? '') ?>">
             </div>
+            <label class="form-label">Discount:
+                <span id="discountValue">
+                    <?= isset($editProduct['discount']) ? $editProduct['discount'] : 0 ?>%
+                </span>
+            </label>
+
+
             <div class="mb-3 my-3">
-                <label for="discount" class="form-label">Discount</label>
-                <input type="text" class="form-control" id="discount" name="discount" value="<?= htmlspecialchars($editProduct['discount'] ?? '') ?>">
+                <input
+                    type="range"
+                    class="form-range"
+                    name="discount"
+                    id="discount"
+                    min="0"
+                    max="90"
+                    value="<?= isset($editProduct['discount']) ? $editProduct['discount'] : 0 ?>"
+                    oninput="document.getElementById('discountValue').textContent = this.value + '%';">
+
             </div>
             <div class="mb-3 my-3">
                 <label for="image" class="form-label">Image</label>

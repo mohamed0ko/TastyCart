@@ -96,9 +96,21 @@
                 <input type="text" class="form-control" id="prix" name="prix">
             </div>
             <div class="mb-3 my-3">
-                <label for="discount" class="form-label">Discount</label>
-                <input type="text" class="form-control" id="discount" name="discount">
+                <label for="discount" class="form-label">
+                    Discount: <span id="discountValue">0%</span>
+                </label>
+
+                <input
+                    type="range"
+                    class="form-range"
+                    name="discount"
+                    id="discount"
+                    min="0"
+                    max="90"
+                    value="0"
+                    oninput="document.getElementById('discountValue').textContent = this.value + '%';">
             </div>
+
 
             <div class="mb-3 my-3">
                 <label for="image" class="form-label">Image</label>
