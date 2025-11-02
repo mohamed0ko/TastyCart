@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../connectData.php';
 $id = $_GET['id'];
 $sql = $pdo->prepare('select * from categories where id =?');
@@ -62,7 +63,17 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
                                 <span class="category-badge mb-2 d-inline-block"><?php echo $categories['name'] ?></span>
                                 <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $product['name'] ?></a></h6>
                                 <div class="d-flex justify-content-between align-items-center">
+
+
+
                                     <span class="price">$<?php echo $product['prix'] ?></span>
+
+
+
+
+
+
+
                                     <?php include '../include/qte.php' ?>
 
                                 </div>
@@ -92,11 +103,19 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function updateQuantity(productId, change) {
-            const input = event.target.parentElement.querySelector('.quantity-input');
-            let value = parseInt(input.value) + change;
-            if (value >= 1) {
-                input.value = value;
+        function updateQuantity(productId, delta) {
+
+            var inputField = document.getElementById('qte_' + productId);
+
+            if (inputField) {
+
+                var currentQte = parseInt(inputField.value) || 0;
+
+                var newQte = currentQte + delta;
+
+                if (newQte < 0) newQte = 0;
+                if (newQte > 99) newQte = 99;
+                inputField.value = newQte;
             }
         }
     </script>

@@ -13,7 +13,11 @@
         </div>
         <a href="cart.php"
             class="btn">
-            <i class="fa-solid fa-cart-plus"></i>
+            <?php
+            $userId = $_SESSION['users']['id'];
+            $countItm =  count($_SESSION['cart'][$userId]);
+            ?>
+            <i class="fa-solid fa-cart-plus"><?php echo $countItm ?></i>
         </a>
     </div>
 </nav>
