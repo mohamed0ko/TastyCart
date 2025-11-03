@@ -94,14 +94,11 @@ $products = $sql->fetch(PDO::FETCH_ASSOC);
         }
 
         function updateQuantity(productId, change) {
-            const input = document.getElementById('qte');
+            const input = event.target.parentElement.querySelector('.quantity-input');
             let value = parseInt(input.value) + change;
-
-
-            if (value < 0) value = 0;
-            if (value > 99) value = 99;
-
-            input.value = value;
+            if (value >= 0) {
+                input.value = value;
+            }
         }
     </script>
 

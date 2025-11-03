@@ -103,19 +103,11 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function updateQuantity(productId, delta) {
-
-            var inputField = document.getElementById('qte_' + productId);
-
-            if (inputField) {
-
-                var currentQte = parseInt(inputField.value) || 0;
-
-                var newQte = currentQte + delta;
-
-                if (newQte < 0) newQte = 0;
-                if (newQte > 99) newQte = 99;
-                inputField.value = newQte;
+        function updateQuantity(productId, change) {
+            const input = event.target.parentElement.querySelector('.quantity-input');
+            let value = parseInt(input.value) + change;
+            if (value >= 0) {
+                input.value = value;
             }
         }
     </script>

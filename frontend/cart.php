@@ -14,7 +14,7 @@ session_start();
     <!-- font-awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <title>Cart | </title>
+    <title>Cart </title>
 
 </head>
 
@@ -22,22 +22,21 @@ session_start();
     <?php include '../include/nav_front.php' ?>
     <?php
     require_once '../connectData.php';
-    $userId = $_SESSION['users']['id'];
+    $userId = $_SESSION['users']['id'] ?? 0;
     $cartCount = count($_SESSION['cart'][$userId]);
-    $cart = $_SESSION['cart'][$userId];
-    $idProducts = array_keys($_SESSION['cart'][$userId]);
-    // change array [2,3,4] to 2,3,4
-    $idProducts = implode(',',  $idProducts);
+    $cart = $_SESSION['cart'][$userId] ?? [];
 
-    $products = $sql = $pdo->query("select * from products where id in ($idProducts)")->fetchAll(PDO::FETCH_ASSOC);
-
+    if (!empty($cart)) {
+        $idProducts = array_keys($cart);
+        // change array [2,3,4] to 2,3,4
+        $idProductsString = implode(',',  $idProducts);
+        $products = $sql = $pdo->query("select * from products where id in ($idProductsString)")->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
     ?>
 
     <div class="container mt-5">
-
-
 
         <?php
 
@@ -60,8 +59,28 @@ session_start();
                             </div>
 
 
-                            <!-- Product Cards -->
-                            <?php foreach ($products as $product) {
+
+                            <?php
+
+                            $orderSubTotal = 0;
+                            $orderDisc = 0;
+                            $orderTotal = 0;
+                            foreach ($products as $product) {
+                                $productId = $product['id'];
+                                $qte = isset($cart[$productId]) ? $cart[$productId] : 0;
+
+                                //subTotal
+                                $order = $product['prix'] * $qte;
+                                $orderSubTotal += $order;
+
+                                //discount
+                                $discount = $product['discount'] ?? 0;
+                                $priceAfterDiscount = $product['prix'] - ($product['prix'] * $discount / 100);
+                                $orderAfterDiscount = $priceAfterDiscount * $qte;
+                                $orderTotal += $orderAfterDiscount;
+                                //orderTotal
+                                $orderDisc = $orderSubTotal - $orderTotal;
+
                             ?>
                                 <div class="d-flex flex-column gap-3">
                                     <!-- Product 1 -->
@@ -83,20 +102,22 @@ session_start();
 
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <button class="quantity-btn" onclick="updateQuantity(1, -1)">-</button>
-                                                    <input type="number" class="quantity-input" value="<?php echo $cart[$product['id']] ?>" min="1">
-                                                    <button class="quantity-btn" onclick="updateQuantity(1, 1)">+</button>
-                                                </div>
+                                                <?php
+                                                $idProduct = $product['id'];
+                                                include '../include/qte.php'
+                                                ?>
                                             </div>
                                             <div class="col-md-2">
                                                 <?php
+
                                                 if (!empty($product['discount'])) {
                                                     $prix = $product['prix'];
                                                     $discount = $product['discount'];
                                                     $total_disc = $prix - (($prix * $discount) / 100);
                                                     $qte = $cart[$product['id']];
                                                     $total = $total_disc * $qte;
+                                                    //--------
+
                                                 ?>
                                                     <span class="fw-bold">$<?php echo $total ?></span>
                                                 <?php
@@ -107,15 +128,20 @@ session_start();
                                                 <?php
                                                 }
 
-
-
-
                                                 ?>
 
                                             </div>
                                             <div class="col-md-1">
-                                                <i class="bi bi-trash remove-btn"></i>
+                                                <form action="delete_cart.php" method="post">
+                                                    <?php $currentProductId = $idProduct;
+                                                    ?>
+                                                    <input type="hidden" name="id" value="<?php echo $currentProductId ?>">
+                                                    <button type="submit" name="delete" class="btn btn-link p-0 border-0">
+                                                        <i class="bi bi-trash text-danger fs-5"></i>
+                                                    </button>
+                                                </form>
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -123,8 +149,11 @@ session_start();
                             <?php
 
                             } ?>
-
+                            <button class="btn btn-primary checkout-btn w-100 mb-3">
+                                Update....
+                            </button>
                         </div>
+
 
                         <!-- Summary Section -->
                         <div class="col-lg-4">
@@ -133,30 +162,18 @@ session_start();
 
                                 <div class="d-flex justify-content-between mb-3">
                                     <span class="text-muted">Subtotal</span>
-                                    <span>$479.97</span>
+                                    <span>$<?php echo  $orderSubTotal; ?></span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-3">
                                     <span class="text-muted">Discount</span>
-                                    <span class="text-success">-$26.00</span>
+                                    <span class="text-success">-$<?php echo $orderDisc ?></span>
                                 </div>
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span class="text-muted">Shipping</span>
-                                    <span>$5.00</span>
-                                </div>
+
                                 <hr>
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fw-bold">Total</span>
-                                    <span class="fw-bold">$458.97</span>
+                                    <span class="fw-bold">$<?php echo $orderTotal  ?></span>
                                 </div>
-
-                                <!-- Promo Code -->
-                                <div class="mb-4">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Promo code">
-                                        <button class="btn btn-outline-secondary" type="button">Apply</button>
-                                    </div>
-                                </div>
-
                                 <button class="btn btn-primary checkout-btn w-100 mb-3">
                                     Proceed to Checkout
                                 </button>
@@ -186,7 +203,7 @@ session_start();
         function updateQuantity(productId, change) {
             const input = event.target.parentElement.querySelector('.quantity-input');
             let value = parseInt(input.value) + change;
-            if (value >= 1) {
+            if (value >= 0) {
                 input.value = value;
             }
         }

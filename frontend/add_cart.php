@@ -27,4 +27,5 @@ if ($qte === 0) {
     $_SESSION['cart'][$userId][$id] = $qte;
 }
 
-header("location:detailProduct.php?id=$id");
+//header("location:detailProduct.php?id=$id");
+header("location:" . $_SERVER['HTTP_REFERER']);
