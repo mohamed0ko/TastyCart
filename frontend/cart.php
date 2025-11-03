@@ -19,12 +19,14 @@ session_start();
 </head>
 
 <body>
+
     <?php include '../include/nav_front.php' ?>
     <?php
     require_once '../connectData.php';
     $userId = $_SESSION['users']['id'] ?? 0;
     $cartCount = count($_SESSION['cart'][$userId]);
     $cart = $_SESSION['cart'][$userId] ?? [];
+    //create cart
 
     if (!empty($cart)) {
         $idProducts = array_keys($cart);
@@ -32,21 +34,92 @@ session_start();
         $idProductsString = implode(',',  $idProducts);
         $products = $sql = $pdo->query("select * from products where id in ($idProductsString)")->fetchAll(PDO::FETCH_ASSOC);
     }
+    //create command
+
+    if (isset($_POST['valid'])) {
+        $grandTotal = 0;
+        $productPrix = [];
+
+
+        foreach ($products as $product) {
+            $productId = $product['id'];
+            $qte = $cart[$productId];
+
+            // Calculate discounted price if applicable
+            if (!empty($product['discount'])) {
+                $prix = $product['prix'] - ($product['prix'] * $product['discount'] / 100);
+            } else {
+                $prix = $product['prix'];
+            }
+
+            // total for this product
+            $total = $prix * $qte;
+
+            // add to overall total
+            $grandTotal += $total;
+
+            $productPrix[$productId] = [
+                'product_id' => $productId,
+                'prix' => $prix,
+                'total' => $prix * $qte,
+                'qte' => $qte
+            ];
+        }
+
+        $sql = $pdo->prepare('insert into command (user_id,total) value(?,?)');
+        $sql->execute([$userId, $grandTotal]);
+        $commandId = $pdo->lastInsertId();
+
+        //create command line
+        $sqlCom = 'INSERT INTO command_line (product_id, command_id, prix, quantity, total) VALUES ';
+        $params = [];
+
+        foreach ($productPrix as $product) {
+            $id = $product['product_id'];
+
+            $sqlCom .= "(:product_id$id, :command_id$id, :prix$id, :quantity$id, :total$id),";
+
+            $params[":product_id$id"] = $product['product_id'];
+            $params[":command_id$id"] = $commandId;
+            $params[":prix$id"] = $product['prix'];
+            $params[":quantity$id"] = $product['qte'];
+            $params[":total$id"] = $product['total'];
+        }
+
+
+        $sqlCom = rtrim($sqlCom, ',');
+
+
+        $sqlState = $pdo->prepare($sqlCom);
+        $insert = $sqlState->execute($params);
+
+        if ($insert) {
+            $_SESSION['cart'][$userId] = [];
 
 
     ?>
+            <div class="alert alert-primary my-3 fade-out" role="alert" id="successAlert">
+                Command created successfully
+            </div>
+    <?php
+        }
+        // header("location:" . $_SERVER['HTTP_REFERER']);
+    }
 
-    <div class="container mt-5">
 
-        <?php
+    ?>
+    <?php
 
-        if (empty($cart)) {
-        ?>
+    if (empty($cart)) {
+    ?>
+
+        <div class="container mt-5">
+
             <div class="alert alert-danger my-3 fade-out" role="alert">
                 cart is empty!
             </div>
         <?php
-        } else {
+    } else {
         ?>
             <div class="cart-wrapper">
                 <div class="container">
@@ -57,9 +130,6 @@ session_start();
                                 <h4 class="mb-0">Shopping Cart</h4>
                                 <span class="text-muted"><?php echo $cartCount ?> items</span>
                             </div>
-
-
-
                             <?php
 
                             $orderSubTotal = 0;
@@ -110,7 +180,7 @@ session_start();
                                             <div class="col-md-2">
                                                 <?php
 
-                                                if (!empty($product['discount'])) {
+                                                if (isset($product['discount'])) {
                                                     $prix = $product['prix'];
                                                     $discount = $product['discount'];
                                                     $total_disc = $prix - (($prix * $discount) / 100);
@@ -133,7 +203,9 @@ session_start();
                                             </div>
                                             <div class="col-md-1">
                                                 <form action="delete_cart.php" method="post">
-                                                    <?php $currentProductId = $idProduct;
+                                                    <?php
+                                                    $currentProductId = $idProduct;
+                                                    //
                                                     ?>
                                                     <input type="hidden" name="id" value="<?php echo $currentProductId ?>">
                                                     <button type="submit" name="delete" class="btn btn-link p-0 border-0">
@@ -149,9 +221,7 @@ session_start();
                             <?php
 
                             } ?>
-                            <button class="btn btn-primary checkout-btn w-100 mb-3">
-                                Update....
-                            </button>
+
                         </div>
 
 
@@ -174,9 +244,12 @@ session_start();
                                     <span class="fw-bold">Total</span>
                                     <span class="fw-bold">$<?php echo $orderTotal  ?></span>
                                 </div>
-                                <button class="btn btn-primary checkout-btn w-100 mb-3">
-                                    Proceed to Checkout
-                                </button>
+
+                                <form method="post">
+                                    <button name="valid" value="valid command" class="btn btn-primary checkout-btn w-100 mb-3">
+                                        Proceed to Checkout
+                                    </button>
+                                </form>
 
                                 <div class="d-flex justify-content-center gap-2">
                                     <i class="bi bi-shield-check text-success"></i>
@@ -188,13 +261,10 @@ session_start();
                 </div>
             </div>
 
-        <?php
-        }
-        ?>
-
-
-
-    </div>
+        </div>
+    <?php
+    }
+    ?>
 
 
 
@@ -207,6 +277,28 @@ session_start();
                 input.value = value;
             }
         }
+        // alert
+        setTimeout(() => {
+            const alert = document.getElementById('successAlert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.remove();
+
+                    // clear the cart visually
+                    const cartWrapper = document.querySelector('.cart-wrapper');
+                    if (cartWrapper) {
+                        cartWrapper.innerHTML = `
+                    <div class="container mt-5">
+                        <div class="alert alert-danger my-3" role="alert">
+                            Cart is empty!
+                        </div>
+                    </div>`;
+                    }
+                }, 500);
+            }
+        }, 3000);
     </script>
 
 

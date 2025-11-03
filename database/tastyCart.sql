@@ -40,10 +40,40 @@ CREATE TABLE products (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
+-- Table: commend
 
+CREATE TABLE command (
+  id int PRIMARY KEY AUTO_INCREMENT,
+  user_id int ,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  total decimal(10,2) NOT NULL,
+  valid int NOT NULL DEFAULT 0,
+  date_creation datetime NOT NULL DEFAULT current_timestamp()
+)
+
+-- Table: ling_commend
+CREATE TABLE command_line (
+    id int PRIMARY KEY AUTO_INCREMENT,
+  product_id int NOT NULL,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  command_id int,
+  FOREIGN KEY (command_id) REFERENCES command(id) ON DELETE CASCADE,
+  prix decimal(10,2) NOT NULL,
+  quantity int NOT NULL,
+  total decimal(10,2) NOT NULL
+)
+
+
+
+
+USE TastyCart;
 SELECT * FROM users;
 SELECT * FROM categories;
 select * FROM products;
+select * FROM products;
+select * FROM command;
+select * FROM command_line;
+
 
 ALTER TABLE categories ADD COLUMN icon VARCHAR(255) AFTER name;
 
