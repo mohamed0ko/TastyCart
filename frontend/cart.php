@@ -28,18 +28,23 @@ session_start();
     $cart = $_SESSION['cart'][$userId] ?? [];
     //create cart
 
+    $products = [];
+
     if (!empty($cart)) {
         $idProducts = array_keys($cart);
-        // change array [2,3,4] to 2,3,4
-        $idProductsString = implode(',',  $idProducts);
-        $products = $sql = $pdo->query("select * from products where id in ($idProductsString)")->fetchAll(PDO::FETCH_ASSOC);
+        $idProductsString = implode(',', $idProducts);
+
+        if (!empty($idProductsString)) {
+            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($idProductsString)");
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
+
     //create command
 
-    if (isset($_POST['valid'])) {
+    if (isset($_POST['valid']) && !empty($products)) {
         $grandTotal = 0;
         $productPrix = [];
-
 
         foreach ($products as $product) {
             $productId = $product['id'];
@@ -296,9 +301,9 @@ session_start();
                         </div>
                     </div>`;
                     }
-                }, 500);
+                }, 100);
             }
-        }, 3000);
+        }, 1000);
     </script>
 
 
