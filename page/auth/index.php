@@ -23,6 +23,9 @@
             $last_name = $_POST['last_name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
+            $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+
 
             if (!empty($first_name) && !empty($password) && !empty($last_name) && !empty($email)) {
 
@@ -41,8 +44,8 @@
                 } else {
                     $data = date('Y-m-d');
                     //create user
-                    $sql = $pdo->prepare('INSERT INTO users VALUES (null,?,?,?,?,?)');
-                    $sql->execute([$first_name, $last_name, $email, $password, $data]);
+                    $sql = $pdo->prepare('INSERT INTO users (first_name,last_name,email,password,date_creation) VALUES  (?,?,?,?,?)');
+                    $sql->execute([$first_name, $last_name, $email, $passwordHash, $data]);
                     header('location:login.php');
                 }
             } else {

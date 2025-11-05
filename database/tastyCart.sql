@@ -76,6 +76,17 @@ select * FROM command_line;
 
 
 ALTER TABLE categories ADD COLUMN icon VARCHAR(255) AFTER name;
+ALTER TABLE users ADD COLUMN role ENUM('admin', 'user') DEFAULT 'user';
+UPDATE users SET role = 'admin' WHERE id = 14;
+
+DELETE FROM users WHERE id = 13;
+
+
+
+
+
+
+
 
 
 

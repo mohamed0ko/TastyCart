@@ -1,17 +1,15 @@
 <?php
 session_start();
 require_once '../connectData.php';
-$id = $_GET['id'];
-$sql = $pdo->prepare('select * from categories where id =?');
-$sql->execute([$id]);
-$category = $sql->fetch(PDO::FETCH_ASSOC);
-
-
 //fetch product
-
-$sql = $pdo->prepare('select * from products where category_id = ?');
-$sql->execute([$id]);
+$sql = $pdo->prepare('select * from products');
+$sql->execute();
 $products = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+//fetch category
+$sql = $pdo->prepare('select name from categories');
+$sql->execute();
+$category = $sql->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -25,24 +23,21 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- font-awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
-    <title>category | <?php echo $category['name'] ?></title>
+    <title>Home Page</title>
 
 </head>
 
 <body>
     <?php include '../include/nav_front.php' ?>
-
     <div class="container py-5">
-        <h3><i class="<?= htmlspecialchars($category['icon'] ?? '') ?>"></i>&nbsp;&nbsp;<?php echo $category['name'] ?></h3>
-
         <div class="row g-4">
             <!-- menu -->
             <?php include '../include/menu_front.php' ?>
+            <!-- menu -->
 
 
 
-            <!-- new -->
-            <div class="col-lg-9 my-3">
+            <div class="col-lg-9">
                 <div class="row g-4">
                     <?php
 
@@ -69,8 +64,10 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 
                                     <span class="category-badge mb-2 d-inline-block"><?php echo $category['name'] ?></span>
                                     <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $product['name'] ?></a></h6>
-
                                     <div class="d-flex justify-content-between align-items-center">
+
+
+
                                         <span class="price">$<?php echo $product['prix'] ?></span>
 
                                         <?php include '../include/qte.php' ?>
@@ -92,11 +89,10 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-                    <!-- More product cards can be added here -->
+
 
                 </div>
             </div>
-
         </div>
     </div>
 

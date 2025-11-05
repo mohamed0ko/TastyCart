@@ -1,3 +1,15 @@
+<?php
+require_once '../auth/authCheck.php';
+
+if (!isAdmin()) {
+    header('Location: /TastyCart/page/403.php');
+    exit;
+}
+?>
+<?php
+$connect = isset($_SESSION['users']);
+$user = $_SESSION['users'] ?? null;
+?>
 <!DOCTYPE html>
 <html lang="en">
 

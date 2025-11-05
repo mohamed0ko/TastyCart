@@ -1,3 +1,12 @@
+<?php
+require_once '../auth/authCheck.php';
+
+if (!isAdmin()) {
+    header('Location: /TastyCart/page/403.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -134,8 +143,6 @@
                 class="card-img-top"
                 alt="<?php echo htmlspecialchars($editProduct['name']); ?>"
                 style="width: 300px; height: 200px; object-fit: cover;">
-
-
 
 
             <select class="form-select mb-3" name="category_id" aria-label="Default select example">

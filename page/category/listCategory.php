@@ -1,3 +1,12 @@
+<?php
+require_once '../auth/authCheck.php';
+
+if (!isAdmin()) {
+    header('Location: /TastyCart/page/403.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
 
 
-    <title>list Product</title>
+    <title>list Category</title>
 </head>
 
 <body>

@@ -17,29 +17,51 @@
     <div class="container my-3 ">
 
         <?php
+
         if (isset($_POST['Login'])) {
             $email = $_POST['email'];
             $password = $_POST['password'];
+
             if (!empty($email) && !empty($password)) {
                 require_once '../../connectData.php';
-                //
-                $sql = $pdo->prepare('SELECT * from users where email =? and password =?');
-                $sql->execute([$email, $password]);
 
-                if ($sql->rowCount() >= 1) {
-                    $_SESSION['users'] = $sql->fetch();
-                    header('location:../admin.php');
+                // Fetch the user by email only
+                $sql = $pdo->prepare('SELECT * FROM users WHERE email = ?');
+                $sql->execute([$email]);
+                $user = $sql->fetch(PDO::FETCH_ASSOC);
+
+                if ($user && password_verify($password, $user['password'])) {
+                    session_start();
+
+                    // Password is correct, store user in session
+                    $_SESSION['users'] = [
+                        'id' => $user['id'],
+                        'first_name' => $user['first_name'],
+                        'last_name' => $user['last_name'],
+                        'email' => $user['email'],
+                        'role' => $user['role'],
+                    ];
+
+
+                    if ($user['role'] === 'admin') {
+                        header('Location: ../admin.php');
+                        exit;
+                    } else {
+                        header('Location: ../../frontend/home.php');
+                        exit;
+                    }
                 } else {
+                    // Invalid email or password
         ?>
                     <div class="alert alert-danger my-3" role="alert">
-                        Email or password invalid !
+                        Email or password invalid!
                     </div>
                 <?php
                 }
             } else {
                 ?>
                 <div class="alert alert-danger my-3" role="alert">
-                    Please entre your Email or password !
+                    Please enter your Email and password!
                 </div>
         <?php
             }

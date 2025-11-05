@@ -1,3 +1,12 @@
+<?php
+require_once '../auth/authCheck.php';
+
+if (!isAdmin()) {
+    header('Location: /TastyCart/page/403.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,6 +27,7 @@
     SELECT 
         p.id, 
         p.name, 
+        p.image,
         p.prix, 
         p.discount, 
         p.date_creation, 
@@ -49,6 +59,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
+                    <th scope="col">image</th>
                     <th scope="col">prix</th>
                     <th scope="col">discount</th>
                     <th scope="col">category</th>
@@ -63,6 +74,13 @@
                     <tr class="">
                         <th scope="row"><?= htmlspecialchars($product['id'] ?? '') ?></th>
                         <td><?= htmlspecialchars($product['name'] ?? '') ?></td>
+                        <td>
+                            <img
+                                src="../../upload/product/<?php echo $product['image']  ?>"
+                                class="card-img-top"
+                                alt="<?php htmlspecialchars($product['name']) ?>"
+                                style="width: 150px; height: 85px; object-fit: cover;">
+                        </td>
                         <td><?= htmlspecialchars($product['prix'] ?? '') ?></td>
                         <td><?= htmlspecialchars($product['discount'] ?? '') ?></td>
                         <td><?= htmlspecialchars($product['category_name'] ?? '') ?></td>

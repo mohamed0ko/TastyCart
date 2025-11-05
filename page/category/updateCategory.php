@@ -1,3 +1,12 @@
+<?php
+require_once '../auth/authCheck.php';
+
+if (!isAdmin()) {
+    header('Location: /TastyCart/page/403.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
