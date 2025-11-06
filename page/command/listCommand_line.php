@@ -42,7 +42,7 @@ if (!isAdmin()) {
 
 
     <div class="container my-3 ">
-        <h3> List Product </i></h3>
+        <h3> List Command line </i></h3>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -80,7 +80,7 @@ if (!isAdmin()) {
                         <td><?= htmlspecialchars($line['total'] ?? '') ?></td>
                         <td> <a class="btn btn-success show"
                                 href="listCommand.php?>">
-                                Show Detail
+                                Return List Command
                             </a></td>
 
 

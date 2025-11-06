@@ -62,18 +62,6 @@ $pageActive = $_SERVER['PHP_SELF'];
 
             </ul>
 
-            <!-- Cart Icon (for logged-in users) -->
-            <?php if ($connect && isset($_SESSION['cart'][$user['id']])): ?>
-                <?php $cartCount = count($_SESSION['cart'][$user['id']]); ?>
-                <a href="/TastyCart/frontend/cart.php" class="btn btn-outline-primary position-relative">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <?php if ($cartCount > 0): ?>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            <?= $cartCount ?>
-                        </span>
-                    <?php endif; ?>
-                </a>
-            <?php endif; ?>
         </div>
     </div>
 </nav>

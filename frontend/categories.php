@@ -9,8 +9,16 @@ $category = $sql->fetch(PDO::FETCH_ASSOC);
 
 //fetch product
 
-$sql = $pdo->prepare('select * from products where category_id = ?');
+/* $sql = $pdo->prepare('select * from products where category_id = ?');
 $sql->execute([$id]);
+$products = $sql->fetchAll(PDO::FETCH_ASSOC); */
+//
+$sql = $pdo->prepare('
+    SELECT p.*, c.id AS category_id, c.name AS category_name
+    FROM products AS p
+    JOIN categories AS c ON p.category_id = c.id
+');
+$sql->execute();
 $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -67,11 +75,17 @@ $products = $sql->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                                 <div class="p-3">
 
-                                    <span class="category-badge mb-2 d-inline-block"><?php echo $category['name'] ?></span>
-                                    <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $product['name'] ?></a></h6>
+                                    <span class="category-badge mb-2 d-inline-block"><?php echo $product['category_name'] ?></span>
+
+                                    <h6 class="mb-1">
+                                        <a href="detailProduct.php?id=<?php echo $idProduct ?>&Category_id=<?= $product['category_id'] ?>" class="btn">
+                                            <?php echo $product['name'] ?>
+                                        </a>
+                                    </h6>
+
 
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="price">$<?php echo $product['prix'] ?></span>
+                                        <span class="price"><?php echo $product['prix'] ?>DH</span>
 
                                         <?php include '../include/qte.php' ?>
 

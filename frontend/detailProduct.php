@@ -7,6 +7,24 @@ $sql->execute([$id]);
 $products = $sql->fetch(PDO::FETCH_ASSOC);
 
 
+//fetch product mightLikes
+
+/* var_dump($category_idLike);
+die(); */
+$category_idLike = $_GET['Category_id'];
+
+// Join categories to get category name
+$sql = $pdo->prepare('
+    SELECT p.*, c.name AS category_name
+    FROM products AS p
+    JOIN categories AS c ON p.category_id = c.id
+    WHERE p.category_id = ?
+');
+$sql->execute([$category_idLike]);
+$mightLikes = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 
 ?>
 
@@ -52,12 +70,12 @@ $products = $sql->fetch(PDO::FETCH_ASSOC);
                         $discount = $products['discount'];
                         $total = $prix - (($prix * $discount) / 100);
                     ?>
-                        <span class="h4 me-2">$<?php echo $total ?></span>
-                        <span class="text-muted"><s>$<?php echo $products['prix'] ?></s></span>
+                        <span class="h4 me-2"><?php echo $total ?>DH</span>
+                        <span class="text-muted"><s>DH<?php echo $products['prix'] ?></s></span>
                     <?php
                     } else {
                     ?>
-                        <span class="h4 me-2">$<?php echo $products['prix'] ?></span>
+                        <span class="h4 me-2"><?php echo $products['prix'] ?>DH</span>
                     <?php
 
                     }
@@ -66,21 +84,68 @@ $products = $sql->fetch(PDO::FETCH_ASSOC);
                 </div>
 
                 <p class="mb-4"><?php echo $products['description'] ?></p>
-                <div class="mb-4">
-                    <h5>Color:</h5>
-                    <div class="btn-group" role="group" aria-label="Color selection">
-                        <input type="radio" class="btn-check" name="color" id="black" autocomplete="off" checked>
-                        <label class="btn btn-outline-dark" for="black">Black</label>
-                        <input type="radio" class="btn-check" name="color" id="silver" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="silver">Silver</label>
-                        <input type="radio" class="btn-check" name="color" id="blue" autocomplete="off">
-                        <label class="btn btn-outline-primary" for="blue">Blue</label>
-                    </div>
-                </div>
+
                 <?php
                 $idProduct = $products['id'];
                 include '../include/qte.php'
                 ?>
+
+            </div>
+        </div>
+        <div class="col-lg-9 my-3">
+            <div class="row g-4">
+                <h3>Might Likes</h3>
+
+                <?php
+
+                foreach ($mightLikes as $mightLike) {
+                    $idProduct = $mightLike['id'];
+
+                ?>
+                    <!-- Product Card 1 -->
+                    <div class="col-md-4">
+                        <div class="product-card shadow-sm">
+                            <div class="position-relative">
+
+                                <img src=" ../upload/product/<?php echo $mightLike['image'] ?>" class="product-image w-100" alt="Product">
+                                <?php
+                                if (!empty($mightLike['discount'])) {
+                                ?>
+                                    <span class="discount-badge">-<?php echo $mightLike['discount'] ?>%</span>
+                                <?php
+
+                                }
+                                ?>
+
+                            </div>
+                            <div class="p-3">
+
+                                <span class="category-badge mb-2 d-inline-block"><?php echo $mightLike['name'] ?></span>
+                                <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $mightLike['name'] ?></a></h6>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price"><?php echo $mightLike['prix'] ?>DH</span>
+
+                                    <?php include '../include/qte.php' ?>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                }
+                if (empty($mightLike)) {
+                ?>
+                    <div class="alert alert-danger my-3 fade-out" role="alert">
+                        product not found !
+                    </div>
+                <?php
+                }
+                ?>
+
+
+
+                <!-- More product cards can be added here -->
 
             </div>
         </div>

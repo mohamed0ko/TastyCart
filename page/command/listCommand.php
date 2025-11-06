@@ -97,10 +97,10 @@ if (!isAdmin()) {
                                 href="listCommand_line.php?id=<?= $command['id'] ?>">
                                 Show Detail
                             </a>
-                            <a class="btn btn-success show"
+                            <!--  <a class="btn btn-success show"
                                 href="listCommand.php?id=<?= $command['id'] ?>">
                                 Delete
-                            </a>
+                            </a> -->
                         </td>
                     </tr>
                 <?php

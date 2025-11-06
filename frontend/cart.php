@@ -35,7 +35,12 @@ session_start();
         $idProductsString = implode(',', $idProducts);
 
         if (!empty($idProductsString)) {
-            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($idProductsString)");
+            $stmt = $pdo->query("
+    SELECT p.*, c.name AS category_name
+    FROM products AS p
+    JOIN categories AS c ON p.category_id = c.id
+    WHERE p.id IN ($idProductsString)
+");
             $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
@@ -141,6 +146,7 @@ session_start();
                             $orderDisc = 0;
                             $orderTotal = 0;
                             foreach ($products as $product) {
+
                                 $productId = $product['id'];
                                 $qte = isset($cart[$productId]) ? $cart[$productId] : 0;
 
@@ -166,7 +172,7 @@ session_start();
                                             </div>
                                             <div class="col-md-4">
                                                 <h6 class="mb-1"><?= $product['name'] ?></h6>
-                                                <p class="text-muted mb-0">Black | Premium Series</p>
+                                                <p class="text-muted mb-0"><?php echo $product['category_name']; ?></p>
                                                 <?php
                                                 if (!empty($product['discount'])) {
                                                 ?>
@@ -194,12 +200,12 @@ session_start();
                                                     //--------
 
                                                 ?>
-                                                    <span class="fw-bold">$<?php echo $total ?></span>
+                                                    <span class="fw-bold"><?php echo $total ?> DH</span>
                                                 <?php
                                                 } else {
                                                     $total = $prix * $qte;
                                                 ?>
-                                                    <span class="fw-bold">$<?php echo $total ?></span>
+                                                    <span class="fw-bold"><?php echo $total ?> DH</span>
                                                 <?php
                                                 }
 
@@ -237,17 +243,17 @@ session_start();
 
                                 <div class="d-flex justify-content-between mb-3">
                                     <span class="text-muted">Subtotal</span>
-                                    <span>$<?php echo  $orderSubTotal; ?></span>
+                                    <span><?php echo  $orderSubTotal; ?> DH</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-3">
                                     <span class="text-muted">Discount</span>
-                                    <span class="text-success">-$<?php echo $orderDisc ?></span>
+                                    <span class="text-success">-<?php echo $orderDisc ?> DH</span>
                                 </div>
 
                                 <hr>
                                 <div class="d-flex justify-content-between mb-4">
                                     <span class="fw-bold">Total</span>
-                                    <span class="fw-bold">$<?php echo $orderTotal  ?></span>
+                                    <span class="fw-bold"><?php echo $orderTotal  ?> DH</span>
                                 </div>
 
                                 <form method="post">

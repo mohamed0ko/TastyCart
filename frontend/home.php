@@ -2,12 +2,21 @@
 session_start();
 require_once '../connectData.php';
 //fetch product
-$sql = $pdo->prepare('select * from products');
+/* $sql = $pdo->prepare('select * from products');
+$sql->execute();
+$products = $sql->fetchAll(PDO::FETCH_ASSOC); */
+
+$sql = $pdo->prepare('
+    SELECT p.*, c.id AS category_id, c.name AS category_name
+    FROM products AS p
+    JOIN categories AS c ON p.category_id = c.id
+');
 $sql->execute();
 $products = $sql->fetchAll(PDO::FETCH_ASSOC);
 
+
 //fetch category
-$sql = $pdo->prepare('select name from categories');
+$sql = $pdo->prepare('select name,id from categories');
 $sql->execute();
 $category = $sql->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -29,8 +38,11 @@ $category = $sql->fetch(PDO::FETCH_ASSOC);
 
 <body>
     <?php include '../include/nav_front.php' ?>
+
     <div class="container py-5">
+
         <div class="row g-4">
+
             <!-- menu -->
             <?php include '../include/menu_front.php' ?>
             <!-- menu -->
@@ -62,13 +74,20 @@ $category = $sql->fetch(PDO::FETCH_ASSOC);
                                 </div>
                                 <div class="p-3">
 
-                                    <span class="category-badge mb-2 d-inline-block"><?php echo $category['name'] ?></span>
-                                    <h6 class="mb-1"><a href="detailProduct.php?id=<?php echo $idProduct ?>" class="btn  "><?php echo $product['name'] ?></a></h6>
+
+                                    <span class="category-badge mb-2 d-inline-block"><?php echo $product['category_name'] ?></span>
+
+                                    <h6 class="mb-1">
+                                        <a href="detailProduct.php?id=<?php echo $idProduct ?>&Category_id=<?= $product['category_id'] ?>" class="btn">
+                                            <?php echo $product['name'] ?>
+                                        </a>
+                                    </h6>
+
                                     <div class="d-flex justify-content-between align-items-center">
 
 
 
-                                        <span class="price">$<?php echo $product['prix'] ?></span>
+                                        <span class="price"><?php echo $product['prix'] ?>DH</span>
 
                                         <?php include '../include/qte.php' ?>
 
